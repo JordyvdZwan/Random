@@ -4,6 +4,7 @@ import serverClientHybrid.Exception.InvalidMoveException;
 import serverClientHybrid.model.Board;
 import serverClientHybrid.model.Move;
 import serverClientHybrid.player.HumanPlayer;
+import serverClientHybrid.player.MiniMaxPlayer;
 import serverClientHybrid.player.Player;
 import serverClientHybrid.view.View;
 
@@ -23,14 +24,18 @@ public class Controller {
 
 
     public static void main(String[] args) {
-        players[0] = new HumanPlayer(board, view, YELLOW, "Jordy");
-        players[1] = new HumanPlayer(board, view, RED, "Reinier");
+        players[0] = new MiniMaxPlayer(YELLOW, board);
+        players[1] = new MiniMaxPlayer(RED, board);
+//        players[1] = new HumanPlayer(board, view, RED, "Reinier");
         turn = players[0];
 
+        Move lastMove = null;
         while (!win) {
             view.printMessage(board.toString());
             view.printInputTable();
-            Move move = turn.getMove();
+            Move move = turn.getMove(lastMove);
+            lastMove = move;
+
             if (board.playerWin(move)) {
                 win = true;
                 break;

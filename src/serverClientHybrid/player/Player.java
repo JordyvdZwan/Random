@@ -7,6 +7,6 @@ import serverClientHybrid.model.Move;
  */
 public interface Player {
 
-    Move getMove();
+    Move getMove(Move lastMove);
     String getName();
 }

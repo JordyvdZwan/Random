@@ -3,6 +3,8 @@ package serverClientHybrid.model;
 import org.jetbrains.annotations.Contract;
 import serverClientHybrid.Exception.InvalidMoveException;
 
+import java.util.Arrays;
+
 /**
  * Created by Jordy van der Zwan on 16-Nov-16.
  *
@@ -12,15 +14,79 @@ import serverClientHybrid.Exception.InvalidMoveException;
  */
 public class Board {
     public static final int DIM = 4; //Max 10 because of move notation 0-9 No 10
-    private static final int WINROW = 4 + 1;
+    private static final int WINROW = DIM + 1;
     public static final String RED = "Red";
     public static final String YELLOW = "Yellow";
+    private static final int[][][] score = {{{6,4,4,6}, {4,3,3,4}, {4,3,3,4}, {6,4,4,6}},
+                                            {{3,3,3,3}, {3,6,6,3}, {3,6,6,3}, {3,3,3,3}},
+                                            {{3,3,3,3}, {3,6,6,3}, {3,6,6,3}, {3,3,3,3}},
+                                            {{6,4,4,6}, {4,3,3,4}, {4,3,3,4}, {6,4,4,6}}};
+
 
     //Board in the configuration X, Y, Z
     private String[][][] board;
 
-    private Board(Board board) {
-        this.board = board.getBoard();
+    public Board(String[][][] board) {
+        this.board = board;
+    }
+
+    public int getScore(Move move) {
+        int result = score[move.getX()][move.getY()][move.getZ()];
+        int count = 1;
+        for (int i = -1; i <= 1; i++) {
+            for (int j = -1; j <= 1; j++) {
+                for (int k = -1; k <= 1; k++) {
+                    count += countType(move, move.getX(), move.getY(), move.getZ()) > -1 ? countType(move, move.getX(), move.getY(), move.getZ()) : -1;
+                }
+            }
+        }
+        result *= count;
+        return result;
+    }
+
+    private int countType(Move move, int diffX, int diffY, int diffZ) {
+        String type = move.getType();
+        int tempX = move.getX();
+        int tempY = move.getY();
+        int tempZ = move.getZ();
+        int plus = 0;
+        int minus = 0;
+        int result = 1;
+        while (inBorder(tempX, tempY, tempZ)) {
+            if (board[tempX][tempY][tempZ] == null || !board[tempX][tempY][tempZ].equals(type)) break;
+            tempX -= diffX;
+            tempY -= diffY;
+            tempZ -= diffZ;
+            minus++;
+        }
+        tempX = move.getX();
+        tempY = move.getY();
+        tempZ = move.getZ();
+        while (inBorder(tempX, tempY, tempZ)) {
+            if (board[tempX][tempY][tempZ] == null || !board[tempX][tempY][tempZ].equals(type)) break;
+            tempX += diffX;
+            tempY += diffY;
+            tempZ += diffZ;
+            plus++;
+        }
+        result += (plus == -1 || minus == -1) ? -1 : plus + minus;
+        return result;
+    }
+
+    public Board deepCopy() {
+        String[][][] board = new String[DIM][DIM][DIM];
+        for (int x = 0; x < DIM; x++) {
+            for (int y = 0; y < DIM; y++) {
+                for (int z = 0; z < DIM; z++) {
+                    board[x][y][z] = this.board[x][y][z];
+                }
+            }
+        }
+        return new Board(board);
+    }
+
+    public void setBoard(String[][][] board) {
+        this.board = board;
     }
 
     public Board() {
