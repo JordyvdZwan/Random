@@ -36,7 +36,11 @@ public class Board {
         for (int i = -1; i <= 1; i++) {
             for (int j = -1; j <= 1; j++) {
                 for (int k = -1; k <= 1; k++) {
-                    count += countType(move, move.getX(), move.getY(), move.getZ()) > -1 ? countType(move, move.getX(), move.getY(), move.getZ()) : -1;
+                    if (countType(move, i, j, k) == -1) {
+                        result--;
+                    } else {
+                        count += countType(move, i, j, k);
+                    }
                 }
             }
         }
@@ -51,25 +55,38 @@ public class Board {
         int tempZ = move.getZ();
         int plus = 0;
         int minus = 0;
+        int rowCount = 0;
         int result = 1;
         while (inBorder(tempX, tempY, tempZ)) {
-            if (board[tempX][tempY][tempZ] == null || !board[tempX][tempY][tempZ].equals(type)) break;
+            if (board[tempX][tempY][tempZ].equals(type)) {
+                plus++;
+            } else if (!board[tempX][tempY][tempZ].equals(type)) {
+                minus++;
+            }
+            rowCount++;
             tempX -= diffX;
             tempY -= diffY;
             tempZ -= diffZ;
-            minus++;
         }
         tempX = move.getX();
         tempY = move.getY();
         tempZ = move.getZ();
         while (inBorder(tempX, tempY, tempZ)) {
-            if (board[tempX][tempY][tempZ] == null || !board[tempX][tempY][tempZ].equals(type)) break;
+            if (board[tempX][tempY][tempZ].equals(type)) {
+                plus++;
+            } else if (!board[tempX][tempY][tempZ].equals(type)) {
+                minus++;
+            }
             tempX += diffX;
             tempY += diffY;
             tempZ += diffZ;
-            plus++;
+            rowCount++;
         }
-        result += (plus == -1 || minus == -1) ? -1 : plus + minus;
+        if (rowCount == 5) {
+            result += (minus > 0 && minus < 3) ? -1 : plus;
+            result += (minus >= 3) ? 20 : 0;
+            result += (plus == 3) ? 50 : 0;
+        }
         return result;
     }
 
