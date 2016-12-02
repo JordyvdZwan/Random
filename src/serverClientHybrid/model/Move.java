@@ -31,4 +31,8 @@ public class Move {
     public int getZ() {
         return z;
     }
+
+    public String toString() {
+        return "type = " + type + " x= " + x + " y= " + y + " z= " + z;
+    }
 }
