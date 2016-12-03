@@ -34,6 +34,7 @@ public class Board {
         int result = score[move.getX()][move.getY()][move.getZ()];
         int count = 1;
         for (int i = -1; i <= 1; i++) {
+            i = (i == 0) ? 1 : i;
             for (int j = -1; j <= 1; j++) {
                 for (int k = -1; k <= 1; k++) {
                     if (countType(move, i, j, k) == -1) {
@@ -45,6 +46,7 @@ public class Board {
             }
         }
         result *= count;
+        System.out.println(result);
         return result;
     }
 
@@ -56,12 +58,14 @@ public class Board {
         int plus = 0;
         int minus = 0;
         int rowCount = 0;
-        int result = 1;
+        int result = 0;
         while (inBorder(tempX, tempY, tempZ)) {
-            if (board[tempX][tempY][tempZ].equals(type)) {
-                plus++;
-            } else if (!board[tempX][tempY][tempZ].equals(type)) {
-                minus++;
+            if (board[tempX][tempY][tempZ] != null) {
+                if (board[tempX][tempY][tempZ].equals(type)) {
+                    plus++;
+                } else if (!board[tempX][tempY][tempZ].equals(type)) {
+                    minus++;
+                }
             }
             rowCount++;
             tempX -= diffX;
@@ -72,17 +76,19 @@ public class Board {
         tempY = move.getY();
         tempZ = move.getZ();
         while (inBorder(tempX, tempY, tempZ)) {
-            if (board[tempX][tempY][tempZ].equals(type)) {
-                plus++;
-            } else if (!board[tempX][tempY][tempZ].equals(type)) {
-                minus++;
+            if (board[tempX][tempY][tempZ] != null) {
+                if (board[tempX][tempY][tempZ].equals(type)) {
+                    plus++;
+                } else if (!board[tempX][tempY][tempZ].equals(type)) {
+                    minus++;
+                }
             }
             tempX += diffX;
             tempY += diffY;
             tempZ += diffZ;
             rowCount++;
         }
-        if (rowCount == 5) {
+        if (rowCount == 4) {
             result += (minus > 0 && minus < 3) ? -1 : plus;
             result += (minus >= 3) ? 20 : 0;
             result += (plus == 3) ? 50 : 0;
