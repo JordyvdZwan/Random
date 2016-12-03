@@ -1,5 +1,6 @@
 package serverClientHybrid.player;
 
+import serverClientHybrid.model.Board;
 import serverClientHybrid.model.Move;
 
 /**
@@ -7,6 +8,6 @@ import serverClientHybrid.model.Move;
  */
 public interface Player {
 
-    Move getMove(Move lastMove);
+    Move getMove(Move lastMove, Board board);
     String getName();
 }

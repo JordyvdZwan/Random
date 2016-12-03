@@ -22,12 +22,17 @@ public class SupremePlayer implements Player {
     }
 
     @Override
-    public Move getMove(Move lastMove) {
-        return null;
+    public Move getMove(Move lastMove, Board board) {
+        this.board = board;
+        Move move;
+        MiniMaxTreeLink max = generateBeginTree(board);
+        move = max.getHighestScoreNextMove();
+        System.out.println(board.printScore(type, board));
+        return move;
     }
 
     private MiniMaxTreeLink generateBeginTree(Board board) {
-        int depth = 5;
+        int depth = 3;
         System.out.println("Starting begin tree generation.");
         long start = System.currentTimeMillis();
         MiniMaxTreeLink tree = new MiniMaxTreeLink(null);
@@ -38,7 +43,6 @@ public class SupremePlayer implements Player {
                 try {
                     Move move = copy.setMove(x, z, type);
                     MiniMaxTreeLink child = generateBeginTree(copy, tree, move, depth);
-                    System.out.println(copy.toString());
                     tree.putNext(move, child);
                 } catch (InvalidMoveException e) {
                     //ignore...
@@ -53,8 +57,6 @@ public class SupremePlayer implements Player {
         MiniMaxTreeLink link = new MiniMaxTreeLink(parent);
         if (depth == 0) {
             return null;
-        } else if (board.playerWin(lastMove)) {
-            link.setScore(lastMove.getType().equals(type) ? 1 : -1);
         } else {
             for (int x = 0; x < DIM; x++) {
                 for (int z = 0; z < DIM; z++) {
@@ -63,10 +65,11 @@ public class SupremePlayer implements Player {
                     try {
                         Move move = copy.setMove(x, z, lastMove.getType().equals(Board.RED) ? Board.YELLOW : Board.RED);
                         MiniMaxTreeLink child = generateBeginTree(copy, link, move, depth - 1);
-                        child.setScore(board.getScore(move));
+                        if (child != null) {
+                            child.setScore(board.getScore(move));
+                        }
                         link.putNext(move, child);
                     } catch (InvalidMoveException e) {
-                        //ignore...
                     }
                 }
             }
@@ -75,14 +78,14 @@ public class SupremePlayer implements Player {
             } else if (link.getNext(link.getKeyset().iterator().next()) != null) {
                 if (lastMove.getType().equals(type)) {
                     //max
-                    int max = -1;
+                    int max = 0;
                     for (Move key : link.getKeyset()) {
                         max = link.getNext(key).getScore() > max ? link.getNext(key).getScore() : max;
                     }
                     link.setScore(max);
                 } else {
                     //min
-                    int min = 1;
+                    int min = 0;
                     for (Move key : link.getKeyset()) {
                         min = link.getNext(key).getScore() < min ? link.getNext(key).getScore() : min;
                     }
@@ -98,4 +101,5 @@ public class SupremePlayer implements Player {
     public String getName() {
         return "Admiral general Alladeen MOTHERFUCKERS!!!!!";
     }
+
 }

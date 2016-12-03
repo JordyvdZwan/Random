@@ -112,7 +112,6 @@ public class MiniMaxPlayer implements Player {
                 link.setScore(0);
             } else {
                 if (lastMove.getType().equals(otherType)) {
-                    //max
                     int max = -1;
                     for (Move key: link.getKeyset()) {
                         max = link.getNext(key).getScore() > max ? link.getNext(key).getScore() : max;
@@ -163,7 +162,7 @@ public class MiniMaxPlayer implements Player {
     List<Move> moveHistory = new ArrayList<>();
 
     @Override
-    public Move getMove(Move lastMove) {
+    public Move getMove(Move lastMove, Board board) {
         Move move;
         if (lastMove == null) {
             //first move

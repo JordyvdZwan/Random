@@ -25,16 +25,20 @@ public class HumanPlayer implements Player {
         return name;
     }
 
-    public Move getMove(Move lastMove) {
+    public Move getMove(Move lastMove, Board board) {
         String move = view.askMove(name);
         String alphabet = "ABCDEFGHIJ";
         int z = Integer.parseInt(move.split("")[0]) - 1;
         int x = alphabet.indexOf(move.split("")[1]);
+        Board copy = board.deepCopy();
+        int y = 0;
         try {
-            return board.setMove(x, z, type);
+            y = copy.setMove(x, z, type).getY();
         } catch (InvalidMoveException e) {
-            return getValidMove(type, e.getMessage());
+            e.printStackTrace();
         }
+        Move move1 = new Move(type, x, y, z);
+        return move1;
     }
 
     private Move getValidMove(String turn, String message) {

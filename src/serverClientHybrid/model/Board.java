@@ -33,6 +33,9 @@ public class Board {
     public int getScore(Move move) {
         int result = score[move.getX()][move.getY()][move.getZ()];
         int count = 1;
+        if (board[move.getX()][move.getY()][move.getZ()] != null) {
+            return 0;
+        }
         for (int i = -1; i <= 1; i++) {
             i = (i == 0) ? 1 : i;
             for (int j = -1; j <= 1; j++) {
@@ -46,7 +49,6 @@ public class Board {
             }
         }
         result *= count;
-        System.out.println(result);
         return result;
     }
 
@@ -88,7 +90,7 @@ public class Board {
             tempZ += diffZ;
             rowCount++;
         }
-        if (rowCount == 4) {
+        if (rowCount == 5) {
             result += (minus > 0 && minus < 3) ? -1 : plus;
             result += (minus >= 3) ? 20 : 0;
             result += (plus == 3) ? 50 : 0;
@@ -175,6 +177,22 @@ public class Board {
 
     private String[][][] getBoard() {
         return board;
+    }
+
+    public String printScore(String type, Board board1) {
+        String boardString = "";
+        for (int z = 0; z < DIM; z++) {
+            for (int y = 0; y < DIM; y++) {
+                for (int x = 0; x < DIM; x++) {
+                    int score = board1.getScore(new Move(type, x, y ,z));
+                    String stringScore = "||" + score;
+                    boardString = boardString + stringScore;
+                }
+                boardString = boardString.concat("|<Y=" + y + "|");
+            }
+            boardString = boardString.concat("\n");
+        }
+        return boardString;
     }
 
     public String toString() {
