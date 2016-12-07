@@ -37,9 +37,9 @@ public class Board {
             return 0;
         }
         for (int i = -1; i <= 1; i++) {
-            i = (i == 0) ? 1 : i;
             for (int j = -1; j <= 1; j++) {
                 for (int k = -1; k <= 1; k++) {
+                    k = (i == 0 && j == 0 && k == 0) ? 1 : k;
                     if (countType(move, i, j, k) == -1) {
                         result--;
                     } else {
@@ -133,6 +133,10 @@ public class Board {
             y--;
         }
         throw new InvalidMoveException("Below Playing field");
+    }
+
+    public Move setMove(Move move) throws InvalidMoveException {
+        return setMove(move.getX(), move.getZ(), move.getType());
     }
 
     @Contract(pure = true)

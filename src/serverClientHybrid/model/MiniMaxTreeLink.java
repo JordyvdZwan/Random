@@ -50,10 +50,24 @@ public class MiniMaxTreeLink {
     public Move getHighestScoreNextMove() {
         Move move = nextLink.keySet().iterator().next();
         for (Move subMove : nextLink.keySet()) {
-            if (nextLink.get(subMove).getScore() > nextLink.get(move).getScore()) {
-                move = subMove;
+            if (nextLink.get(subMove) != null && nextLink.get(move) != null) {
+                if (nextLink.get(subMove).getScore() > nextLink.get(move).getScore()) {
+                    move = subMove;
+                }
             }
+
         }
         return move;
     }
+
+    public String toString() {
+        String result = "";
+        for (Move move : nextLink.keySet()) {
+            if (nextLink.get(move) != null) {
+                result += move.toString() + " score = " + nextLink.get(move).getScore() + "\n";
+            }
+        }
+        return result;
+    }
+
 }

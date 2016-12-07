@@ -22,8 +22,8 @@ public class Controller {
 
 
     public static void main(String[] args) {
-        players[0] = new SupremePlayer(YELLOW, board);
-        players[1] = new SupremePlayer(RED, board);
+        players[0] = new NegaMaxPlayer(YELLOW, "negamax1");
+        players[1] = new NegaMaxPlayer(RED, "negamax2");
 //        players[1] = new HumanPlayer(board, view, RED, "Reinier");
         turn = players[0];
 

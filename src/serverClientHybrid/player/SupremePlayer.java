@@ -14,6 +14,7 @@ public class SupremePlayer implements Player {
     private String type;
     private String otherType;
     private Board board;
+    private static final int depth = 3;
 
     public SupremePlayer(String type, Board board) {
         this.board = board;
@@ -25,48 +26,46 @@ public class SupremePlayer implements Player {
     public Move getMove(Move lastMove, Board board) {
         this.board = board;
         Move move;
-        MiniMaxTreeLink max = generateBeginTree(board);
+        MiniMaxTreeLink max = generateTree(board);
         move = max.getHighestScoreNextMove();
         System.out.println(board.printScore(type, board));
+        System.out.println(max.toString());
         return move;
     }
 
-    private MiniMaxTreeLink generateBeginTree(Board board) {
-        int depth = 3;
-        System.out.println("Starting begin tree generation.");
-        long start = System.currentTimeMillis();
+    private MiniMaxTreeLink generateTree(Board board) {
         MiniMaxTreeLink tree = new MiniMaxTreeLink(null);
         for (int x = 0; x < DIM; x++) {
             for (int z = 0; z < DIM; z++) {
-                System.out.println("Time since start: " + (System.currentTimeMillis() - start));
                 Board copy = board.deepCopy();
                 try {
                     Move move = copy.setMove(x, z, type);
-                    MiniMaxTreeLink child = generateBeginTree(copy, tree, move, depth);
+                    MiniMaxTreeLink child = generateTree(copy, tree, move, depth);
                     tree.putNext(move, child);
                 } catch (InvalidMoveException e) {
                     //ignore...
                 }
             }
         }
-        System.out.println("[DONE] Time since start: " + (System.currentTimeMillis() - start));
         return tree;
     }
 
-    private MiniMaxTreeLink generateBeginTree(Board board, MiniMaxTreeLink parent, Move lastMove, int depth) {
+    private MiniMaxTreeLink generateTree(Board board, MiniMaxTreeLink parent, Move lastMove, int depth) {
         MiniMaxTreeLink link = new MiniMaxTreeLink(parent);
         if (depth == 0) {
             return null;
+        } else if (board.playerWin(lastMove)) {
+            link.setScore(30000);
+            return link;
         } else {
             for (int x = 0; x < DIM; x++) {
                 for (int z = 0; z < DIM; z++) {
                     Board copy = board.deepCopy();
-
                     try {
                         Move move = copy.setMove(x, z, lastMove.getType().equals(Board.RED) ? Board.YELLOW : Board.RED);
-                        MiniMaxTreeLink child = generateBeginTree(copy, link, move, depth - 1);
+                        MiniMaxTreeLink child = generateTree(copy, link, move, depth - 1);
                         if (child != null) {
-                            child.setScore(board.getScore(move));
+                            child.setScore(copy.getScore(move));
                         }
                         link.putNext(move, child);
                     } catch (InvalidMoveException e) {
@@ -80,14 +79,18 @@ public class SupremePlayer implements Player {
                     //max
                     int max = 0;
                     for (Move key : link.getKeyset()) {
-                        max = link.getNext(key).getScore() > max ? link.getNext(key).getScore() : max;
+                        if (link.getNext(key) != null) {
+                            max = link.getNext(key).getScore() > max ? link.getNext(key).getScore() : max;
+                        }
                     }
                     link.setScore(max);
                 } else {
                     //min
                     int min = 0;
                     for (Move key : link.getKeyset()) {
-                        min = link.getNext(key).getScore() < min ? link.getNext(key).getScore() : min;
+                        if (link.getNext(key) != null) {
+                            min = link.getNext(key).getScore() < min ? link.getNext(key).getScore() : min;
+                        }
                     }
                     link.setScore(min);
                 }
@@ -101,5 +104,4 @@ public class SupremePlayer implements Player {
     public String getName() {
         return "Admiral general Alladeen MOTHERFUCKERS!!!!!";
     }
-
 }

@@ -16,6 +16,10 @@ public class Move {
         this.z = z;
     }
 
+    public Move() {
+
+    }
+
     public String getType() {
         return type;
     }
@@ -33,6 +37,6 @@ public class Move {
     }
 
     public String toString() {
-        return "type = " + type + " x= " + x + " y= " + y + " z= " + z;
+        return "type= " + type + " x= " + x + " y= " + y + " z= " + z;
     }
 }
