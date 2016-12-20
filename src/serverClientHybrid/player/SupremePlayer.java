@@ -23,7 +23,7 @@ public class SupremePlayer implements Player {
     }
 
     @Override
-    public Move getMove(Move lastMove, Board board) {
+    public Move getMove(Board board) {
         this.board = board;
         Move move;
         MiniMaxTreeLink max = generateTree(board);

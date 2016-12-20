@@ -9,66 +9,64 @@ import java.util.Map;
 
 import static serverClientHybrid.model.Board.DIM;
 
-/**
- * Created by reinier on 6-12-2016.
- */
-public class NegaMaxPlayer implements Player {
+public class NeoNegaMaxPlayer implements Player {
 
     private static final int WIN = 2000;
     private static final int DEPTH = 4;
     private static final int TRANSPOSITIONDEPTH = 1;
     private String type;
     private String name;
-    private String othertype;
+    private String otherType;
     private Map<Board, Integer> transPositionTable;
     private int alphabeta = 0;
     private int transposition = 0;
 
-    public NegaMaxPlayer(String type, String name) {
+    public NeoNegaMaxPlayer(String type, String name) {
         this.type = type;
         this.name = name;
-        othertype = type.equals(Board.RED) ? Board.YELLOW : Board.RED;
+        otherType = type.equals(Board.RED) ? Board.YELLOW : Board.RED;
     }
 
 
     @Override
     public Move getMove(Board board) {
-        alphabeta = 0;
+//        alphabeta = 0;
         transposition = 0;
         transPositionTable = new HashMap<>();
 
         Move optimalMove = new Move();
         int maxScore = Integer.MIN_VALUE;
         for (Move move : allMoves(board, 1)) {
-            Board copy = board.deepCopy();
             try {
-                copy.setMove(move);
-                int score = negamax(move, copy, board, DEPTH, Integer.MIN_VALUE, Integer.MAX_VALUE, -1);
+                board.setMove(move);
+                int score = neonegamax(move, board, DEPTH, Integer.MIN_VALUE, Integer.MAX_VALUE, -1);
                 if (score > maxScore) {
                     optimalMove = move;
                     maxScore = score;
                 }
-//                System.out.println(move.toString() + " score= " + score);
+                board.removeMove(move);
+                System.out.println(move.toString() + " score= " + score);
             } catch (InvalidMoveException e) {
-
+                e.printStackTrace();
             }
         }
-        System.out.println("size = " + transPositionTable.size());
-        System.out.println("alpha beta = " + alphabeta);
+//        System.out.println("alpha beta = " + alphabeta);
         System.out.println("transposition = " + transposition);
         return optimalMove;
     }
 
-    private int negamax(Move parent, Board board, Board oldBoard, int depth, int alpha, int betha, int type) {
+    private int neonegamax(Move parent, Board board, int depth, int alpha, int beta, int type) {
         if (board.playerWin(parent)) {
             return -type * WIN * depth;
         } else if (depth == 0) {
-            return -type * oldBoard.getScore(parent);
+            board.removeMove(parent);
+            return -type * board.getScore(parent);
         } else {
             if (depth > TRANSPOSITIONDEPTH) {
                 for (Board key : transPositionTable.keySet()) {
                     if (key.myEquals(board)) {
                         transposition++;
+                        System.out.println(board);
                         return transPositionTable.get(key);
                     }
                 }
@@ -76,18 +74,20 @@ public class NegaMaxPlayer implements Player {
             if (type == 1) {
                 int v;
                 int result = Integer.MIN_VALUE;
-                for (Move newMove : allMoves(board, type)) {
-                    Board copy = board.deepCopy();
+                ArrayList<Move> allMoves = allMoves(board, type);
+                for (Move newMove : allMoves) {
                     try {
-                        copy.setMove(newMove);
-                        v = negamax(newMove, copy, board, depth - 1, alpha, betha, -type);
+                        board.setMove(newMove);
+                        v = neonegamax(newMove, board, depth - 1, alpha, beta, -type);
                         result = Math.max(v, result);
                         alpha = Math.max(alpha, v);
-                        if (alpha >= betha) {
-                            alphabeta++;
+                        board.removeMove(newMove);
+                        if (alpha >= beta) {
+//                            alphabeta++;
                             break;
                         }
                     } catch (InvalidMoveException e) {
+                        e.printStackTrace();
                     }
                 }
                 if (depth > TRANSPOSITIONDEPTH) {
@@ -97,18 +97,20 @@ public class NegaMaxPlayer implements Player {
             } else {
                 int v;
                 int result = Integer.MAX_VALUE;
-                for (Move newMove : allMoves(board, type)) {
-                    Board copy = board.deepCopy();
+                ArrayList<Move> allMoves = allMoves(board, type);
+                for (Move newMove : allMoves) {
                     try {
-                        copy.setMove(newMove);
-                        v = negamax(newMove, copy, board, depth - 1, alpha, betha, -type);
+                        board.setMove(newMove);
+                        v = neonegamax(newMove, board, depth - 1, alpha, beta, -type);
                         result = Math.min(v, result);
-                        betha = Math.min(betha, v);
-                        if (alpha >= betha) {
-                            alphabeta++;
+                        beta = Math.min(beta, v);
+                        board.removeMove(newMove);
+                        if (alpha >= beta) {
+//                            alphabeta++;
                             break;
                         }
                     } catch (InvalidMoveException e) {
+                        e.printStackTrace();
                     }
                 }
                 if (depth > TRANSPOSITIONDEPTH) {
@@ -124,7 +126,7 @@ public class NegaMaxPlayer implements Player {
         for (int x = 0; x < DIM; x++) {
             for (int z = 0; z < DIM; z++) {
                 if (board.validMove(x, z)) {
-                    result.add(new Move((type == 1) ? this.type : othertype, x, z));
+                    result.add(new Move((type == 1) ? this.type : otherType, x, z));
                 }
             }
         }

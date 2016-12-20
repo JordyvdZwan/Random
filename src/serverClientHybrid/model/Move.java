@@ -16,6 +16,12 @@ public class Move {
         this.z = z;
     }
 
+    public Move(String type, int x, int z) {
+        this.type = type;
+        this.x = x;
+        this.z = z;
+    }
+
     public Move() {
 
     }
@@ -34,6 +40,10 @@ public class Move {
 
     public int getZ() {
         return z;
+    }
+
+    public void setY(int y) {
+        this.y = y;
     }
 
     public String toString() {

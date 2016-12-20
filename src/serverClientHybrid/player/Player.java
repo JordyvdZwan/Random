@@ -8,6 +8,6 @@ import serverClientHybrid.model.Move;
  */
 public interface Player {
 
-    Move getMove(Move lastMove, Board board);
+    Move getMove(Board board);
     String getName();
 }

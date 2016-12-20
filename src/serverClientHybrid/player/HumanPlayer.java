@@ -25,7 +25,7 @@ public class HumanPlayer implements Player {
         return name;
     }
 
-    public Move getMove(Move lastMove, Board board) {
+    public Move getMove(Board board) {
         String move = view.askMove(name);
         String alphabet = "ABCDEFGHIJ";
         int z = Integer.parseInt(move.split("")[0]) - 1;

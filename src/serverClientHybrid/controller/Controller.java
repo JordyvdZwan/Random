@@ -22,8 +22,10 @@ public class Controller {
 
 
     public static void main(String[] args) {
-        players[0] = new NegaMaxPlayer(YELLOW, "negamax1");
-        players[1] = new NegaMaxPlayer(RED, "negamax2");
+        players[0] = new NeoNegaMaxPlayer(YELLOW, "neonegamax1");
+        players[1] = new NeoNegaMaxPlayer(RED, "neonegamax2");
+//        players[0] = new NegaMaxPlayer(YELLOW, "negamax1");
+//        players[1] = new NegaMaxPlayer(RED, "negamax2");
 //        players[1] = new HumanPlayer(board, view, RED, "Reinier");
         turn = players[0];
 
@@ -31,13 +33,12 @@ public class Controller {
         while (!win) {
             view.printMessage(board.toString());
             view.printInputTable();
-            Move move = turn.getMove(lastMove, board);
+            Move move = turn.getMove(board);
             try {
                 board.setMove(move.getX(), move.getZ(), move.getType());
             } catch (InvalidMoveException e) {
 
             }
-            lastMove = move;
 
             if (board.playerWin(move)) {
                 win = true;
@@ -45,6 +46,7 @@ public class Controller {
             }
             nextTurn();
         }
+        System.out.println(board.toString());
         System.out.println("Player " + turn.getName() + " has won!!");
     }
 

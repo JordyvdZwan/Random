@@ -24,7 +24,7 @@ public class Board {
 
 
     //Board in the configuration X, Y, Z
-    private String[][][] board;
+    public String[][][] board;
 
     public Board(String[][][] board) {
         this.board = board;
@@ -135,8 +135,24 @@ public class Board {
         throw new InvalidMoveException("Below Playing field");
     }
 
+    public void removeMove(Move move) {
+//        int x = move.getX();
+//        int z = move.getZ();
+//        int y = 0;
+//        while (y <= DIM - 1) {
+//            if (y == DIM - 1 || board[x][y + 1][z] == null) {
+//                board[x][y][z] = null;
+//                break;
+//            }
+//            y++;
+//        }
+        board[move.getX()][move.getY()][move.getZ()] = null;
+    }
+
     public Move setMove(Move move) throws InvalidMoveException {
-        return setMove(move.getX(), move.getZ(), move.getType());
+        Move set = setMove(move.getX(), move.getZ(), move.getType());
+        move.setY(set.getY());
+        return move;
     }
 
     @Contract(pure = true)
@@ -181,6 +197,51 @@ public class Board {
 
     private String[][][] getBoard() {
         return board;
+    }
+
+    public boolean myEquals(Board newboard) {
+        for (int x = 0; x < DIM; x++) {
+            for (int y = 0; y < DIM; y++) {
+                for (int z = 0; z < DIM; z++) {
+                    if (board[x][y][z] != null && newboard.getBoard()[x][y][z] != null) {
+                        if (!board[x][y][z].equals(newboard.getBoard()[x][y][z])) {
+                            return false;
+                        }
+                    } else if (board[x][y][z] != null ^ newboard.getBoard()[x][y][z] != null) {
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
+    }
+
+    public Board rotateCounterClock() {
+        Board result = new Board();
+        String[][][] rotate = new String[DIM][DIM][DIM];
+        for (int y = 0; y < DIM; y++) {
+            for (int x = 0; x < DIM; x++) {
+                for (int z = DIM - 1; z >= 0; z--) {
+                    rotate[x][y][DIM - 1 - z] = board[z][y][x];
+                }
+            }
+        }
+        result.setBoard(rotate);
+        return result;
+    }
+
+    public Board rotateClockWise() {
+        Board result = new Board();
+        String[][][] rotate = new String[DIM][DIM][DIM];
+        for (int y = 0; y < DIM; y++) {
+            for (int x = DIM - 1; x >= 0; x--) {
+                for (int z = 0; z < DIM; z++) {
+                    rotate[DIM - 1 - x][y][z] = board[z][y][x];
+                }
+            }
+        }
+        result.setBoard(rotate);
+        return result;
     }
 
     public String printScore(String type, Board board1) {
