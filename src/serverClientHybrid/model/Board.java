@@ -199,15 +199,32 @@ public class Board {
         return board;
     }
 
-    public boolean myEquals(Board newboard) {
+    public boolean myEquals(String[][][] node) {
         for (int x = 0; x < DIM; x++) {
             for (int y = 0; y < DIM; y++) {
                 for (int z = 0; z < DIM; z++) {
-                    if (board[x][y][z] != null && newboard.getBoard()[x][y][z] != null) {
-                        if (!board[x][y][z].equals(newboard.getBoard()[x][y][z])) {
+                    if (board[x][y][z] != null && node[x][y][z] != null) {
+                        if (!board[x][y][z].equals(node[x][y][z])) {
                             return false;
                         }
-                    } else if (board[x][y][z] != null ^ newboard.getBoard()[x][y][z] != null) {
+                    } else if (board[x][y][z] != null ^ node[x][y][z] != null) {
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
+    }
+
+    public boolean myEquals(Board node) {
+        for (int x = 0; x < DIM; x++) {
+            for (int y = 0; y < DIM; y++) {
+                for (int z = 0; z < DIM; z++) {
+                    if (board[x][y][z] != null && node.getBoard()[x][y][z] != null) {
+                        if (!board[x][y][z].equals(node.getBoard()[x][y][z])) {
+                            return false;
+                        }
+                    } else if (board[x][y][z] != null ^ node.getBoard()[x][y][z] != null) {
                         return false;
                     }
                 }

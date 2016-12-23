@@ -12,14 +12,14 @@ import static serverClientHybrid.model.Board.DIM;
 public class NeoNegaMaxPlayer implements Player {
 
     private static final int WIN = 2000;
-    private static final int DEPTH = 4;
+    private static final int DEPTH = 6;
     private static final int TRANSPOSITIONDEPTH = 1;
     private String type;
     private String name;
     private String otherType;
-    private Map<Board, Integer> transPositionTable;
-    private int alphabeta = 0;
-    private int transposition = 0;
+    private Map<String[][][], Integer> transPositionTable;
+//    private int alphabeta = 0;
+//    private int transposition = 0;
 
     public NeoNegaMaxPlayer(String type, String name) {
         this.type = type;
@@ -31,7 +31,7 @@ public class NeoNegaMaxPlayer implements Player {
     @Override
     public Move getMove(Board board) {
 //        alphabeta = 0;
-        transposition = 0;
+//        transposition = 0;
         transPositionTable = new HashMap<>();
 
         Move optimalMove = new Move();
@@ -45,13 +45,13 @@ public class NeoNegaMaxPlayer implements Player {
                     maxScore = score;
                 }
                 board.removeMove(move);
-                System.out.println(move.toString() + " score= " + score);
+//                System.out.println(move.toString() + " score= " + score);
             } catch (InvalidMoveException e) {
                 e.printStackTrace();
             }
         }
 //        System.out.println("alpha beta = " + alphabeta);
-        System.out.println("transposition = " + transposition);
+//        System.out.println("transposition = " + transposition);
         return optimalMove;
     }
 
@@ -63,10 +63,10 @@ public class NeoNegaMaxPlayer implements Player {
             return -type * board.getScore(parent);
         } else {
             if (depth > TRANSPOSITIONDEPTH) {
-                for (Board key : transPositionTable.keySet()) {
-                    if (key.myEquals(board)) {
-                        transposition++;
-                        System.out.println(board);
+                for (String[][][] key : transPositionTable.keySet()) {
+                    if (board.board.equals(key)) {
+//                        transposition++;
+//                        System.out.println(board);
                         return transPositionTable.get(key);
                     }
                 }
@@ -91,7 +91,8 @@ public class NeoNegaMaxPlayer implements Player {
                     }
                 }
                 if (depth > TRANSPOSITIONDEPTH) {
-                    transPositionTable.put(board, result);
+                    String[][][] node = board.board.clone();
+                    transPositionTable.put(node, result);
                 }
                 return result;
             } else {
@@ -114,7 +115,8 @@ public class NeoNegaMaxPlayer implements Player {
                     }
                 }
                 if (depth > TRANSPOSITIONDEPTH) {
-                    transPositionTable.put(board, result);
+                    String[][][] node = board.board.clone();
+                    transPositionTable.put(node, result);
                 }
                 return result;
             }
