@@ -4,6 +4,7 @@ import serverClientHybrid.Exception.InvalidMoveException;
 import serverClientHybrid.model.*;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -12,14 +13,14 @@ import static serverClientHybrid.model.Board.DIM;
 public class NeoNegaMaxPlayer implements Player {
 
     private static final int WIN = 2000;
-    private static final int DEPTH = 6;
+    private static final int DEPTH = 4;
     private static final int TRANSPOSITIONDEPTH = 1;
     private String type;
     private String name;
     private String otherType;
     private Map<String[][][], Integer> transPositionTable;
-//    private int alphabeta = 0;
-//    private int transposition = 0;
+    private int alphabeta = 0;
+    private int transposition = 0;
 
     public NeoNegaMaxPlayer(String type, String name) {
         this.type = type;
@@ -30,8 +31,8 @@ public class NeoNegaMaxPlayer implements Player {
 
     @Override
     public Move getMove(Board board) {
-//        alphabeta = 0;
-//        transposition = 0;
+        alphabeta = 0;
+        transposition = 0;
         transPositionTable = new HashMap<>();
 
         Move optimalMove = new Move();
@@ -50,8 +51,8 @@ public class NeoNegaMaxPlayer implements Player {
                 e.printStackTrace();
             }
         }
-//        System.out.println("alpha beta = " + alphabeta);
-//        System.out.println("transposition = " + transposition);
+        System.out.println("alpha beta = " + alphabeta);
+        System.out.println("transposition = " + transposition);
         return optimalMove;
     }
 
@@ -64,8 +65,8 @@ public class NeoNegaMaxPlayer implements Player {
         } else {
             if (depth > TRANSPOSITIONDEPTH) {
                 for (String[][][] key : transPositionTable.keySet()) {
-                    if (board.board.equals(key)) {
-//                        transposition++;
+                    if (Arrays.deepEquals(board.board, key)) {
+                        transposition++;
 //                        System.out.println(board);
                         return transPositionTable.get(key);
                     }
@@ -83,7 +84,7 @@ public class NeoNegaMaxPlayer implements Player {
                         alpha = Math.max(alpha, v);
                         board.removeMove(newMove);
                         if (alpha >= beta) {
-//                            alphabeta++;
+                            alphabeta++;
                             break;
                         }
                     } catch (InvalidMoveException e) {
@@ -91,8 +92,8 @@ public class NeoNegaMaxPlayer implements Player {
                     }
                 }
                 if (depth > TRANSPOSITIONDEPTH) {
-                    String[][][] node = board.board.clone();
-                    transPositionTable.put(node, result);
+//                    String[][][] node = new String[board.DIM][board.DIM][board.DIM];
+                    transPositionTable.put(myClone(board.board, board.DIM), result);
                 }
                 return result;
             } else {
@@ -107,7 +108,7 @@ public class NeoNegaMaxPlayer implements Player {
                         beta = Math.min(beta, v);
                         board.removeMove(newMove);
                         if (alpha >= beta) {
-//                            alphabeta++;
+                            alphabeta++;
                             break;
                         }
                     } catch (InvalidMoveException e) {
@@ -115,8 +116,8 @@ public class NeoNegaMaxPlayer implements Player {
                     }
                 }
                 if (depth > TRANSPOSITIONDEPTH) {
-                    String[][][] node = board.board.clone();
-                    transPositionTable.put(node, result);
+//                    String[][][] node = new String[board.DIM][board.DIM][board.DIM];
+                    transPositionTable.put(myClone(board.board, board.DIM), result);
                 }
                 return result;
             }
@@ -129,6 +130,18 @@ public class NeoNegaMaxPlayer implements Player {
             for (int z = 0; z < DIM; z++) {
                 if (board.validMove(x, z)) {
                     result.add(new Move((type == 1) ? this.type : otherType, x, z));
+                }
+            }
+        }
+        return result;
+    }
+
+    private String[][][] myClone(String [][][] source, int size) {
+        String[][][] result = new String[size][size][size];
+        for (int i = 0; i < size; i++) {
+            for (int j = 0; j < size; j++) {
+                for (int k = 0; k < size; k++) {
+                    result[i][j][k] = source[i][j][k];
                 }
             }
         }
